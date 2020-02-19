@@ -82,7 +82,6 @@ export function cross(dfa1, dfa2, acceptanceCriteria = (dfa1State, dfa2State) =>
     // we know the new states are stored in <dfa1>-<dfa2> format, so 
     // we can just split on '-'
     let states = newStates[i].split('-');
-    // console.log(states[0] + "|||||" + states[1]);
     if (acceptanceCriteria(states[0], states[1])) {
        acceptStates.push(newStates[i]);
     }
