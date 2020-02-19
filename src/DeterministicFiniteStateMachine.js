@@ -33,42 +33,25 @@ export default class DeterministicFiniteStateMachine {
 }
 
 /**
- *
- */
- /*
-     DeterministicFiniteStateMachine {
-      transitions: {
-        r0: { '0': 'r0', '1': 'r1' },
-        r1: { '0': 'r2', '1': 'r0' },
-        r2: { '0': 'r1', '1': 'r2' }
-      },
-      startState: 'r0',
-      acceptStates: [ 'r0' ]
-    }
 */
 export function cross(dfa1, dfa2, acceptanceCriteria = (dfa1State, dfa2State) => true) {
- //console.warn(dfa1);
-  //console.warn(dfa2);
   // final info
   let newTransitions = {};
   let startState = '';
   let acceptStates = [];
 
   // work variables
-
   let dfa1Transitions = dfa1['transitions'];
   let dfa2Transitions = dfa2['transitions'];
+
   let dfa1StateKeys = Object.keys(dfa1Transitions);
-  //console.warn(dfa1StateKeys);
   let dfa2StateKeys = Object.keys(dfa2Transitions);
-  //console.warn(dfa2StateKeys);
 
   let newStates = [];
 
   // Generate all new states
   for(let i = 0; i < dfa1StateKeys.length; i++) {
     for(let j = 0; j < dfa2StateKeys.length; j++) {
-      // console.warn(dfa1StateKeys[i] + '-' + dfa2StateKeys[j])
       let newStateName = dfa1StateKeys[i] + '-' + dfa2StateKeys[j];
 
       newStates.push(newStateName);
@@ -80,15 +63,13 @@ export function cross(dfa1, dfa2, acceptanceCriteria = (dfa1State, dfa2State) =>
     // we know the new states are stored in <dfa1>-<dfa2> format, so 
     // we can just split on '-'
     let splitStates = newStates[i].split('-');
-    // console.warn(splitStates);
+
     let dfa1TransitionToStateOn0 = dfa1['transitions'][splitStates[0]]['0'];
-    //console.warn("dfa1TransitionToStateOn0 " +  dfa1TransitionToStateOn0);
     let dfa2TransitionToStateOn0 = dfa2['transitions'][splitStates[1]]['0'];
-    //console.warn("dfa2TransitionToStateOn0 " +  dfa2TransitionToStateOn0);
+
     let dfa1TransitionToStateOn1 = dfa1['transitions'][splitStates[0]]['1'];
-    //console.warn("dfa1TransitionToStateOn1 " +  dfa1TransitionToStateOn1);
     let dfa2TransitionToStateOn1 = dfa2['transitions'][splitStates[1]]['1'];
-    //console.warn("dfa2TransitionToStateOn1 " +  dfa2TransitionToStateOn1);
+
     newTransitions[newStates[i]] = {};
     newTransitions[newStates[i]]['0'] = dfa1TransitionToStateOn0 + '-' + dfa2TransitionToStateOn0;
     newTransitions[newStates[i]]['1'] = dfa1TransitionToStateOn1 + '-' + dfa2TransitionToStateOn1;
@@ -113,7 +94,6 @@ export function cross(dfa1, dfa2, acceptanceCriteria = (dfa1State, dfa2State) =>
       startState: startState,
       acceptStates: acceptStates,
     };
-  console.warn(dfaCross);
 
   return new DeterministicFiniteStateMachine (dfaCross);
 }
