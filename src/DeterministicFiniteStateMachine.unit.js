@@ -1,4 +1,4 @@
-import DeterministicFiniteStateMachine from './DeterministicFiniteStateMachine';
+import DeterministicFiniteStateMachine, { union, intersection, minus } from './DeterministicFiniteStateMachine';
 
 const tests = {
   divBy3: {
@@ -141,5 +141,73 @@ describe('examples', () => {
         }
       });
     });
+  }
+});
+
+describe('cross product', () => {
+  for (const [key1, desc1] of Object.entries(tests)) {
+    for (const [key2, desc2] of Object.entries(tests)) {
+      if(key1 != key2) {
+
+
+        describe(`dfa1: ${key1} x dfa2: ${key2}`, () => {
+
+          test('union', () => {
+            const dfa1 = new DeterministicFiniteStateMachine(desc1.description);
+            const dfa2 = new DeterministicFiniteStateMachine(desc2.description);
+
+            const allTests = [
+              ...desc1.tests.accepts,
+              ...desc1.tests.rejects,
+              ...desc2.tests.accepts,
+              ...desc2.tests.rejects,
+            ];
+            
+            const fsm = union(dfa1, dfa2);
+            for (const string of allTests) {
+              const expectedResult = dfa1.accepts(string) || dfa2.accepts(string);
+              expect(`${string}: ${fsm.accepts(string)}`).toEqual(`${string}: ${expectedResult}`);
+            }
+          });
+
+          test('intersection', () => {
+            const dfa1 = new DeterministicFiniteStateMachine(desc1.description);
+            const dfa2 = new DeterministicFiniteStateMachine(desc2.description);
+
+            const allTests = [
+              ...desc1.tests.accepts,
+              ...desc1.tests.rejects,
+              ...desc2.tests.accepts,
+              ...desc2.tests.rejects,
+            ];
+            
+            const fsm = intersection(dfa1, dfa2);
+            for (const string of allTests) {
+              const expectedResult = dfa1.accepts(string) && dfa2.accepts(string);
+              expect(`${string}: ${fsm.accepts(string)}`).toEqual(`${string}: ${expectedResult}`);
+            }
+          });
+
+          test('minus', () => {
+            const dfa1 = new DeterministicFiniteStateMachine(desc1.description);
+            const dfa2 = new DeterministicFiniteStateMachine(desc2.description);
+
+            const allTests = [
+              ...desc1.tests.accepts,
+              ...desc1.tests.rejects,
+              ...desc2.tests.accepts,
+              ...desc2.tests.rejects,
+            ];
+            
+            const fsm = minus(dfa1, dfa2);
+            for (const string of allTests) {
+              const expectedResult = dfa1.accepts(string) && !dfa2.accepts(string);
+              expect(`${string}: ${fsm.accepts(string)}`).toEqual(`${string}: ${expectedResult}`);
+            }
+          });
+
+        });
+      }
+    }
   }
 });
