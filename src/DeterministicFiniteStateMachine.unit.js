@@ -1,6 +1,176 @@
-import DeterministicFiniteStateMachine, { union, intersection, minus } from './DeterministicFiniteStateMachine';
+import DeterministicFiniteStateMachine, { union, intersection, minus, minimize } from './DeterministicFiniteStateMachine';
 
 const tests = {
+  startsWith0: {
+    minimizable: true,
+    description: {
+      transitions: {
+        S: {
+          0: 'A',
+          1: 'D',
+        },
+        A: {
+          0: 'A',
+          1: 'B',
+        },
+        B: {
+          0: 'A',
+          1: 'C',
+        },
+        D: {
+          0: 'D',
+          1: 'E',
+        },
+        E: {
+          0: 'D',
+          1: 'E',
+        },
+        C: {
+          0: 'A',
+          1: 'B',
+        },
+      },
+      startState: 'S',
+      acceptStates: ['A', 'B', 'C'],
+    },
+
+    tests: {
+      accepts: [
+        '010',
+        '01000',
+        '01',
+      ],
+      rejects: [
+        '1', '10'
+      ],
+    }
+  },
+  acceptsAll: {
+    minimizable: true,
+    description: {
+      transitions: {
+        start: {
+          0: 'acceptsAll',
+          1: 'seen1',
+        },
+        seen1: {
+          0: 'acceptsAll',
+          1: 'seen2',
+        },
+        seen2: {
+          0: 'acceptsAll',
+          1: 'seen2',
+        },
+        acceptsAll: {
+          0: 'acceptsAll',
+          1: 'acceptsAll',
+        },
+      },
+      startState: 'start',
+      acceptStates: ['acceptsAll', 'start', 'seen1', 'seen2'],
+    },
+
+    tests: {
+      accepts: [
+        '110',
+        '11000',
+        '11',
+      ],
+      rejects: [
+      ],
+    }
+  },
+  startsWith11: {
+    minimizable: true,
+    description: {
+      transitions: {
+        start: {
+          0: 'dead0',
+          1: 'seen1',
+        },
+        seen1: {
+          0: 'dead1',
+          1: 'seen11',
+        },
+        dead0: {
+          0: 'dead0',
+          1: 'dead0',
+        },
+        dead1: {
+          0: 'dead1',
+          1: 'dead1',
+        },
+        dead11: {
+          0: 'dead1',
+          1: 'dead1',
+        },
+        seen11: {
+          0: 'seen11',
+          1: 'seen11',
+        }
+      },
+      startState: 'start',
+      acceptStates: ['seen11'],
+    },
+
+    tests: {
+      accepts: [
+        '110',
+        '11000',
+        '11',
+      ],
+      rejects: [
+        '1000',
+        '1',
+      ],
+    }
+  },
+startsWith11OrLambda: {
+    minimizable: true,
+    description: {
+      transitions: {
+        start: {
+          0: 'dead0',
+          1: 'seen1',
+        },
+        seen1: {
+          0: 'dead1',
+          1: 'seen11',
+        },
+        dead0: {
+          0: 'dead0',
+          1: 'dead0',
+        },
+        dead1: {
+          0: 'dead1',
+          1: 'dead1',
+        },
+        dead11: {
+          0: 'dead1',
+          1: 'dead1',
+        },
+        seen11: {
+          0: 'seen11',
+          1: 'seen11',
+        }
+      },
+      startState: 'start',
+      acceptStates: ['seen11','start'],
+    },
+
+    tests: {
+      accepts: [
+        '110',
+        '11000',
+        '11',
+        '',
+      ],
+      rejects: [
+        '1000',
+        '1',
+      ],
+    }
+  },
   divBy3: {
     description: {
       transitions: {
@@ -209,5 +379,25 @@ describe('cross product', () => {
         });
       }
     }
+  }
+});
+
+describe('minimize', () => {
+  for (const [key, desc] of Object.entries(tests)) {
+    test(`minimize(${key})`, () => {
+        const { description, tests, minimizable } = desc;
+        const dfa = new DeterministicFiniteStateMachine(description);
+        const minDfa = minimize(dfa);
+
+        if(minimizable) {
+          expect(minDfa.states().size).toBeLessThan(dfa.states().size);
+        } else {
+          expect(minDfa.states().size).toEqual(dfa.states().size);
+        }
+
+        for(const string of [...tests.accepts, ...tests.rejects]) {
+          expect(dfa.accepts(string)).toEqual(minDfa.accepts(string));
+        }
+    });
   }
 });

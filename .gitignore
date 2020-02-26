@@ -7,3 +7,5 @@ node_env
 *.swp
 .webpack
 coverage
+.idea
+node_env
