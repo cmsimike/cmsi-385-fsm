@@ -15,6 +15,15 @@ yarn eslint
 yarn test
 ```
 
+## Getting Started with Docker
+[Install Docker](https://docs.docker.com/install/) for your environment and confirm it works.
+
+## Running Tests Using Docker
+The benefit of Docker is that once you have Docker installed, you don't need to install anything else - you can just run the tests using Docker.  
+```
+docker build . -t cmsi && docker run cmsi
+```
+
 ## Deployment
 
 TODO
