@@ -125,7 +125,7 @@ const tests = {
       ],
     }
   },
-startsWith11OrLambda: {
+  startsWith11OrLambda: {
     minimizable: true,
     description: {
       transitions: {
@@ -155,15 +155,15 @@ startsWith11OrLambda: {
         }
       },
       startState: 'start',
-      acceptStates: ['seen11','start'],
+      acceptStates: ['seen11', 'start'],
     },
 
     tests: {
       accepts: [
+        '',
         '110',
         '11000',
         '11',
-        '',
       ],
       rejects: [
         '1000',

@@ -7,5 +7,6 @@ node_env
 *.swp
 .webpack
 coverage
-.idea
-node_env
+.dockerignore
+.idea/
+node_env/
