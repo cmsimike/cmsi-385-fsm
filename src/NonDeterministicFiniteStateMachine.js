@@ -28,13 +28,12 @@ export default class NonDeterministicFiniteStateMachine extends DeterministicFin
     if(state === 'start') {
       currentChar = LAMBDA;
       restString = string;
-      allowedTransitions = this.transition(state, currentChar);
     } else {
       currentChar = string[0];
       restString = string.substr(1);
-      allowedTransitions = this.transition(state, currentChar);
     }
-
+    
+    allowedTransitions = this.transition(state, currentChar);
     if(string.length === 0) {
       // Are we at an accept state?
       let passed = this.stateAccepted(state);
